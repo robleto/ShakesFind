@@ -1,0 +1,44 @@
+build-info.json
+node_modules/
+.env
+.env.local
+.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.vscode/
+dist/
+build/
+*.log
+coverage/
+.nyc_output/
+
+# Netlify
+.netlify/
+
+# Supabase
+.supabase/
+
+# Local development
+.env.development
+
+# API keys and secrets
+*.pem
+*.key
+
+# Development and archive folders
+dev-scripts/
+docs-archive/
+database-archive/
+internal/
+docs/business/
+
+# Build artifacts
+build-info.json
+
+# IDE and system files
+.idea/
+*.swp
+*.swo
+*~

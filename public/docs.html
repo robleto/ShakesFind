@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Game Awards API</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .nav {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            color: #3498db;
+            text-decoration: none;
+            margin-right: 2rem;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            color: #2980b9;
+        }
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .endpoint {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .method {
+            background: #27ae60;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        .params {
+            background: #ecf0f1;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .example {
+            background: #3498db;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+        .example:hover {
+            background: #2980b9;
+        }
+        .response {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        .code {
+            font-family: 'Courier New', monospace;
+            background: #ecf0f1;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎲 Game Awards API Documentation</h1>
+        <p>RESTful API for Board Game Award Data</p>
+    </header>
+
+    <div class="container">
+        <div class="nav">
+            <a href="#overview">Overview</a>
+            <a href="#authentication">Authentication</a>
+            <a href="#endpoints">Endpoints</a>
+            <a href="#examples">Examples</a>
+            <a href="#errors">Error Handling</a>
+        </div>
+
+        <div class="section" id="overview">
+            <h2>📋 Overview</h2>
+            <p>The Game Awards API provides access to comprehensive board game award data spanning decades. Backed by Neon serverless PostgreSQL for user accounts, API keys, and usage analytics; all award dataset lookups are in-memory for speed.</p>
+            
+            <h3>Base URL</h3>
+            <div class="endpoint">https://gameawardsapi.com/api/</div>
+            
+            <h3>Data Format</h3>
+            <p>All responses are in JSON format by default. XML support coming soon.</p>
+            
+            <h3>Rate Limiting</h3>
+            <ul>
+                <li>Free tier: 1,000 requests per day</li>
+                <li>Professional: 100,000 requests per month</li>
+                <li>Enterprise: Unlimited requests</li>
+            </ul>
+        </div>
+
+        <div class="section" id="authentication">
+            <h2>🔐 Authentication</h2>
+            <p>API keys are required for production use. Include your API key in all requests:</p>
+            <div class="endpoint">?apikey=YOUR_API_KEY</div>
+            <p><a href="/apikey" style="color: #3498db;">Get your free API key here</a></p>
+        </div>
+
+        <div class="section" id="endpoints">
+            <h2>🛠 Endpoints</h2>
+
+            <h3>Search and Lookup</h3>
+            
+            <div class="endpoint">
+                <span class="method">GET</span> /api/
+            </div>
+            <p>Main search endpoint supporting multiple query types.</p>
+            
+            <h4>Parameters</h4>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><span class="code">i</span></td>
+                    <td>Optional*</td>
+                    <td>Award ID</td>
+                    <td>10865</td>
+                </tr>
+                <tr>
+                    <td><span class="code">t</span></td>
+                    <td>Optional*</td>
+                    <td>Award title search</td>
+                    <td>Spiel des Jahres Winner</td>
+                </tr>
+                <tr>
+                    <td><span class="code">s</span></td>
+                    <td>Optional*</td>
+                    <td>Search across all fields</td>
+                    <td>Catan</td>
+                </tr>
+                <tr>
+                    <td><span class="code">bgg_id</span></td>
+                    <td>Optional*</td>
+                    <td>BoardGameGeek game ID</td>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <td><span class="code">year</span></td>
+                    <td>No</td>
+                    <td>Filter by year</td>
+                    <td>2023</td>
+                </tr>
+                <tr>
+                    <td><span class="code">category</span></td>
+                    <td>No</td>
+                    <td>Filter by category</td>
+                    <td>Game of the Year</td>
+                </tr>
+                <tr>
+                    <td><span class="code">award_set</span></td>
+                    <td>No</td>
+                    <td>Filter by award set</td>
+                    <td>Spiel des Jahres</td>
+                </tr>
+                <tr>
+                    <td><span class="code">type</span></td>
+                    <td>No</td>
+                    <td>Filter by type</td>
+                    <td>winner, nominee</td>
+                </tr>
+            </table>
+            <p><em>*At least one of i, t, s, or bgg_id is required.</em></p>
+
+            <h3>Additional Endpoints</h3>
+            
+            <div class="endpoint">
+                <span class="method">GET</span> /api/awards
+            </div>
+            <p>Get list of all available award sets.</p>
+            
+            <div class="endpoint">
+                <span class="method">GET</span> /api/categories
+            </div>
+            <p>Get list of all available award categories.</p>
+            
+            <div class="endpoint">
+                <span class="method">GET</span> /api/years/{year}
+            </div>
+            <p>Get all awards for a specific year.</p>
+            
+            <div class="endpoint">
+                <span class="method">GET</span> /health
+            </div>
+            <p>Health check endpoint.</p>
+        </div>
+
+        <div class="section" id="examples">
+            <h2>💡 Examples</h2>
+            
+            <h3>Get award by ID</h3>
+            <div class="example" onclick="testAPI('/api/?i=10865')">
+                GET /api/?i=10865&apikey=demo
+            </div>
+            
+            <h3>Search for Spiel des Jahres 2023</h3>
+            <div class="example" onclick="testAPI('/api/?s=Spiel des Jahres&year=2023')">
+                GET /api/?s=Spiel des Jahres&year=2023&apikey=demo
+            </div>
+            
+            <h3>Get all awards for Catan</h3>
+            <div class="example" onclick="testAPI('/api/?bgg_id=13')">
+                GET /api/?bgg_id=13&apikey=demo
+            </div>
+            
+            <h3>Search for Origins Awards</h3>
+            <div class="example" onclick="testAPI('/api/?s=Origins')">
+                GET /api/?s=Origins&apikey=demo
+            </div>
+            
+            <h3>Get all award sets</h3>
+            <div class="example" onclick="testAPI('/api/awards')">
+                GET /api/awards
+            </div>
+
+            <div id="response" class="response" style="display: none;">
+                Response will appear here...
+            </div>
+        </div>
+
+        <div class="section" id="errors">
+            <h2>❌ Error Handling</h2>
+            
+            <h3>Error Response Format</h3>
+            <div class="response">{
+  "Response": "False",
+  "Error": "Error description"
+}</div>
+            
+            <h3>Common Error Codes</h3>
+            <table>
+                <tr>
+                    <th>HTTP Code</th>
+                    <th>Error</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>400</td>
+                    <td>Bad Request</td>
+                    <td>Missing required parameters</td>
+                </tr>
+                <tr>
+                    <td>401</td>
+                    <td>Unauthorized</td>
+                    <td>Invalid or missing API key</td>
+                </tr>
+                <tr>
+                    <td>404</td>
+                    <td>Not Found</td>
+                    <td>Award not found</td>
+                </tr>
+                <tr>
+                    <td>429</td>
+                    <td>Too Many Requests</td>
+                    <td>Rate limit exceeded</td>
+                </tr>
+                <tr>
+                    <td>500</td>
+                    <td>Internal Server Error</td>
+                    <td>Server error</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI(endpoint) {
+            const responseEl = document.getElementById('response');
+            responseEl.style.display = 'block';
+            responseEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseEl.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

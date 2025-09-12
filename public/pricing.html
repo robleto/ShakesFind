@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Awards API - Pricing</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+        .pricing-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .pricing-card { border: 2px solid #e1e5e9; border-radius: 12px; padding: 30px; text-align: center; position: relative; }
+        .pricing-card.popular { border-color: #0066cc; background: linear-gradient(135deg, #f6f9fc 0%, #e9f3ff 100%); }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #0066cc; color: white; padding: 6px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .plan-name { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .plan-price { font-size: 48px; font-weight: 800; color: #0066cc; margin: 20px 0; }
+        .plan-price .period { font-size: 18px; color: #666; font-weight: 400; }
+        .plan-features { list-style: none; padding: 0; margin: 30px 0; }
+        .plan-features li { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .plan-features li:last-child { border-bottom: none; }
+        .cta-button { background: #0066cc; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
+        .cta-button:hover { background: #0052a3; }
+        .cta-button.free { background: #28a745; }
+        .cta-button.free:hover { background: #1e7e34; }
+        .feature-check { color: #28a745; margin-right: 8px; }
+        .api-demo { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 40px 0; }
+        .code-block { background: #1e1e1e; color: #f8f8f2; padding: 15px; border-radius: 6px; font-family: 'Monaco', monospace; font-size: 14px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="pricing-container">
+        <h1 style="text-align: center; font-size: 48px; margin-bottom: 20px;">Choose Your Plan</h1>
+        <p style="text-align: center; font-size: 20px; color: #666; max-width: 600px; margin: 0 auto;">Access comprehensive board game awards data with our flexible pricing plans. Perfect for developers, researchers, and gaming enthusiasts.</p>
+        
+        <div class="api-demo">
+            <h3>Try the API</h3>
+            <div class="code-block">
+GET /api?s=spiel%20des%20jahres&apikey=YOUR_KEY
+{
+  "Response": "True",
+  "totalResults": 815,
+  "search": "spiel des jahres",
+  "awards": [...]
+}
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0<span class="period">/month</span></div>
+                <ul class="plan-features">
+                    <li><span class="feature-check">✓</span> 1,000 requests/month</li>
+                    <li><span class="feature-check">✓</span> Board game awards data</li>
+                    <li><span class="feature-check">✓</span> Rate limited to 33 requests/day</li>
+                    <li><span class="feature-check">✓</span> Community support</li>
+                    <li><span class="feature-check">✓</span> Perfect for testing</li>
+                </ul>
+                <button class="cta-button free" onclick="selectPlan('free')">Get Started Free</button>
+            </div>
+
+            <!-- Professional Plan -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="plan-name">Professional</div>
+                <div class="plan-price">$5<span class="period">/month</span></div>
+                <ul class="plan-features">
+                    <li><span class="feature-check">✓</span> 100,000 requests/month</li>
+                    <li><span class="feature-check">✓</span> All board game awards data</li>
+                    <li><span class="feature-check">✓</span> 3,333 requests/day</li>
+                    <li><span class="feature-check">✓</span> Email support</li>
+                    <li><span class="feature-check">✓</span> Commercial use allowed</li>
+                    <li><span class="feature-check">✓</span> JSON and XML formats</li>
+                </ul>
+                <button class="cta-button" onclick="selectPlan('professional_monthly')">Start Professional</button>
+                <p style="margin-top: 10px; color: #666;">Or $50/year (save $10)</p>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">$15<span class="period">/month</span></div>
+                <ul class="plan-features">
+                    <li><span class="feature-check">✓</span> 1,000,000 requests/month</li>
+                    <li><span class="feature-check">✓</span> All awards data + early access</li>
+                    <li><span class="feature-check">✓</span> 33,333 requests/day</li>
+                    <li><span class="feature-check">✓</span> Priority support</li>
+                    <li><span class="feature-check">✓</span> Custom integrations</li>
+                    <li><span class="feature-check">✓</span> Bulk data exports</li>
+                    <li><span class="feature-check">✓</span> SLA guarantee</li>
+                </ul>
+                <button class="cta-button" onclick="selectPlan('enterprise_monthly')">Go Enterprise</button>
+                <p style="margin-top: 10px; color: #666;">Or $150/year (save $30)</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px; padding: 40px; background: #f8f9fa; border-radius: 12px;">
+            <h3>Scaling to More Award Types</h3>
+            <p style="color: #666; max-width: 800px; margin: 0 auto;">We're expanding beyond board games! Soon you'll have access to video game awards, literature prizes, film honors, and more. Current subscribers get early access to new data categories.</p>
+        </div>
+    </div>
+
+    <script>
+        const stripe = Stripe('pk_test_your_publishable_key_here'); // Replace with your Stripe publishable key
+
+        async function selectPlan(planType) {
+            if (planType === 'free') {
+                // Redirect to free API key generation
+                window.location.href = '/generate-key.html';
+                return;
+            }
+
+            const email = prompt('Enter your email address:');
+            if (!email) return;
+
+            const name = prompt('Enter your name:');
+            if (!name) return;
+
+            try {
+                // Create payment method
+                const { error, paymentMethod } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: {
+                        // This would typically be a Stripe Elements card element
+                        // For demo purposes, you'd implement proper card collection
+                    },
+                });
+
+                if (error) {
+                    console.error('Payment method creation failed:', error);
+                    alert('Payment setup failed. Please try again.');
+                    return;
+                }
+
+                // Create subscription
+                const response = await fetch('/.netlify/functions/create-subscription', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        name,
+                        plan: planType,
+                        payment_method: paymentMethod.id
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Success! Your API key is: ${result.api_key}\n\nPlan: ${result.plan}\nDaily Limit: ${result.daily_limit}\nMonthly Limit: ${result.monthly_limit}`);
+                } else {
+                    alert('Subscription creation failed: ' + result.error);
+                }
+
+            } catch (error) {
+                console.error('Subscription error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

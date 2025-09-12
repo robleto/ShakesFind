@@ -1,0 +1,72 @@
+[
+  {
+    "id": "10865",
+    "slug": "1974-charles-s-roberts-best-amateur-game-winner",
+    "url": "/boardgamehonor/10865/1974-charles-s-roberts-best-amateur-game-winner",
+    "year": 1974,
+    "title": "Charles S Roberts Best Amateur Game Winner",
+    "primaryName": "Manassas",
+    "alternateNames": [],
+    "boardgames": [ { "bggId": 18158, "name": "Manassas" } ],
+    "awardSet": "1974 Charles S. Roberts",
+    "position": "Charles S. Roberts Best Amateur Game",
+    "isWinner": true,
+    "isNominee": false
+  },
+  {
+    "id": "20001",
+    "slug": "2019-spiel-des-jahres-winner",
+    "url": "/boardgamehonor/20001/2019-spiel-des-jahres-winner",
+    "year": 2019,
+    "title": "Spiel des Jahres Winner",
+    "primaryName": "Just One",
+    "alternateNames": [],
+    "boardgames": [ { "bggId": 254640, "name": "Just One" } ],
+    "awardSet": "2019 Spiel des Jahres",
+    "position": "Spiel des Jahres",
+    "isWinner": true,
+    "isNominee": false
+  },
+  {
+    "id": "20002",
+    "slug": "2020-spiel-des-jahres-winner",
+    "url": "/boardgamehonor/20002/2020-spiel-des-jahres-winner",
+    "year": 2020,
+    "title": "Spiel des Jahres Winner",
+    "primaryName": "Pictures",
+    "alternateNames": [],
+    "boardgames": [ { "bggId": 284083, "name": "Pictures" } ],
+    "awardSet": "2020 Spiel des Jahres",
+    "position": "Spiel des Jahres",
+    "isWinner": true,
+    "isNominee": false
+  },
+  {
+    "id": "30001",
+    "slug": "2020-kennnerspiel-des-jahres-winner",
+    "url": "/boardgamehonor/30001/2020-kennnerspiel-des-jahres-winner",
+    "year": 2020,
+    "title": "Kennerspiel des Jahres Winner",
+    "primaryName": "The Crew: The Quest for Planet Nine",
+    "alternateNames": ["Die Crew"],
+    "boardgames": [ { "bggId": 284083, "name": "The Crew: The Quest for Planet Nine" } ],
+    "awardSet": "2020 Kennerspiel des Jahres",
+    "position": "Kennerspiel des Jahres",
+    "isWinner": true,
+    "isNominee": false
+  },
+  {
+    "id": "40001",
+    "slug": "2021-spiel-des-jahres-nominee",
+    "url": "/boardgamehonor/40001/2021-spiel-des-jahres-nominee",
+    "year": 2021,
+    "title": "Spiel des Jahres Nominee",
+    "primaryName": "MicroMacro: Crime City",
+    "alternateNames": [],
+    "boardgames": [ { "bggId": 318977, "name": "MicroMacro: Crime City" } ],
+    "awardSet": "2021 Spiel des Jahres",
+    "position": "Spiel des Jahres",
+    "isWinner": false,
+    "isNominee": true
+  }
+]

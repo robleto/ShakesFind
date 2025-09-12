@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get API Key - Game Awards API</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .pricing-info {
+            background: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        .pricing-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .tier {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        .tier:last-child {
+            border-bottom: none;
+        }
+        .tier-name {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            margin-top: 2rem;
+            display: inline-block;
+        }
+        .back-link:hover {
+            color: #2980b9;
+        }
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .features {
+            text-align: left;
+            margin: 2rem 0;
+        }
+        .features ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .features li:before {
+            content: "✓ ";
+            color: #2ecc71;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔑 Get Your API Key</h1>
+            <p class="subtitle">Start accessing board game award data today</p>
+
+            <div class="pricing-info">
+                <h3>🆓 Free Tier Includes:</h3>
+                <div class="features">
+                    <ul>
+                        <li>1,000 API requests per day</li>
+                        <li>Access to all award data</li>
+                        <li>JSON response format</li>
+                        <li>Search and filtering</li>
+                        <li>Community support</li>
+                    </ul>
+                </div>
+            </div>
+
+            <form id="apiKeyForm">
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your Name">
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Company/Organization</label>
+                    <input type="text" id="company" name="company" placeholder="Your Company (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label for="use_case">How will you use the API?</label>
+                    <select id="use_case" name="use_case">
+                        <option value="">Select a use case</option>
+                        <option value="personal_project">Personal Project</option>
+                        <option value="mobile_app">Mobile App</option>
+                        <option value="web_app">Web Application</option>
+                        <option value="research">Academic Research</option>
+                        <option value="commercial">Commercial Product</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Project Description (optional)</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Tell us about your project..."></textarea>
+                </div>
+
+                <button type="submit" class="btn">Get Free API Key</button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                <strong>Success!</strong> Your API key has been generated and sent to your email.
+                <br><br>
+                <strong>Your API Key:</strong> <span id="generatedKey"></span>
+                <br><br>
+                Save this key securely and include it in all API requests.
+            </div>
+
+            <div class="pricing-info">
+                <h3>💡 Need More?</h3>
+                <div class="tier">
+                    <div class="tier-name">Professional ($5/month)</div>
+                    <div>100,000 requests/month, Priority support, Usage analytics</div>
+                </div>
+                <div class="tier">
+                    <div class="tier-name">Enterprise ($25/month)</div>
+                    <div>Unlimited requests, Custom endpoints, White-label options</div>
+                </div>
+            </div>
+
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('apiKeyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('email').value,
+                name: document.getElementById('name').value,
+                company: document.getElementById('company').value,
+                use_case: document.getElementById('use_case').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await fetch('/.netlify/functions/generate-key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success message
+                    document.getElementById('generatedKey').textContent = result.api_key;
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('apiKeyForm').style.display = 'none';
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to generate API key'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating API key. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
