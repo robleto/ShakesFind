@@ -32,7 +32,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         status: 'OK',
         timestamp: new Date().toISOString(),
-        message: 'Game Awards API is running on Netlify Functions with Neon database',
+  message: 'Shakespeare Productions API is running on Netlify Functions with Neon database',
         database: {
           status: 'connected',
           timestamp: dbHealth.timestamp

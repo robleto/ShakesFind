@@ -1,6 +1,6 @@
 {
   "name": "shakesfind-api",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "A RESTful API for Shakespeare productions (upcoming & recent runs) - OMDB style",
   "main": "server.js",
   "scripts": {
@@ -10,10 +10,8 @@
     "build:meta": "node scripts/generate-build-info.js",
     "build:functions": "echo 'Functions build complete'",
     "test": "jest --runInBand",
-    "netlify:dev": "netlify dev",
-    "functions:dev": "node local-functions-server.js",
-    "query": "node scripts/query-awards.js",
-    "bgg": "node scripts/bgg-lookup.js",
+  "netlify:dev": "netlify dev",
+  "functions:dev": "node local-functions-server.js",
     "db:migrate": "export PATH=\"/opt/homebrew/opt/libpq/bin:$PATH\" && export PGPASSWORD=$PGPASSWORD && psql -h ep-quiet-glade-adjp9y5d-pooler.c-2.us-east-1.aws.neon.tech -U $PGUSER -d neondb -f neon/schema.sql",
     "db:seed": "export PATH=\"/opt/homebrew/opt/libpq/bin:$PATH\" && export PGPASSWORD=$PGPASSWORD && psql -h ep-quiet-glade-adjp9y5d-pooler.c-2.us-east-1.aws.neon.tech -U $PGUSER -d neondb -f neon/seed.sql",
     "deploy:audit": "node dev-scripts/deploy-audit.js",

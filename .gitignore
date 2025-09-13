@@ -32,7 +32,10 @@ dev-scripts/
 docs-archive/
 database-archive/
 internal/
+
+# Internal business / strategy docs (kept out of VCS)
 docs/business/
+business-docs/
 
 # Build artifacts
 build-info.json

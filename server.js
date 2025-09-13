@@ -183,13 +183,6 @@ app.get('/api/productions', (req, res) => {
   });
 });
 
-// Deprecated legacy endpoint
-app.get('/api/awards', (req, res) => {
-  res.status(410).json({
-    Response: 'False',
-    Error: 'Endpoint deprecated. Use /api/productions instead.'
-  });
-});
 
 // Helper functions
 function getProductionById(id) {

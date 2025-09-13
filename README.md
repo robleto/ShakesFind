@@ -4,7 +4,7 @@ An OMDB-style REST API for upcoming and recent Shakespeare theatre productions w
 
 > Commercial deployment asset. Not an open contribution project.
 
-Legacy Note: Earlier iterations referenced a "Game Awards" domain. Those award-specific endpoints and parameters are deprecated and no longer exposed; this repository is now focused solely on Shakespeare production data.
+Legacy Note: Earlier iterations referenced a "Game Awards" domain. All award endpoints and parameters have been fully removed as of v3.0.0; the repository now focuses solely on Shakespeare production data.
 ## 🚀 Deployment & Operations
 
 Production reference stack: Netlify (Functions + static) + Neon (Postgres) + Stripe (subscriptions). Detailed deployment, Neon, Stripe, and quick start guides now live under `docs/technical/`.
@@ -30,7 +30,7 @@ npm run dev  # nodemon auto-restart (Express)
 netlify dev
 ```
 
-Legacy (pre‑2.0) dataset context referenced board game award sets (Spiel des Jahres, Origins Awards, etc.). Those award-specific parameters/endpoints are deprecated and will not return data.
+Legacy (pre‑2.0) dataset context referenced board game award sets (Spiel des Jahres, Origins Awards, etc.). Those artifacts have been purged (v3.0.0) and are no longer shipped.
 
 ## ⚡ Quick Start (Local)
 
@@ -192,7 +192,7 @@ Need broader rights (OEM / white‑label)? Email sales@shakesfind.com.
 
 ### Managing the Private Dataset
 
-Award dataset loader (`lib/awards-data.js`) is retained only for historical reference and may be removed in a future cleanup. Do NOT add proprietary award dumps.
+Award dataset loader was removed in v3.0.0 along with related sample data.
 
 ## 📝 License
 
@@ -200,9 +200,8 @@ See `LICENSE-COMMERCIAL.md`.
 
 ## 🙏 Acknowledgments
 
-- Board game award data sourced from BoardGameGeek community
 - Inspired by the excellent OMDB API structure
-- Built for the board gaming community
+- Built for theatre data products
 
 ## 📞 Support
 

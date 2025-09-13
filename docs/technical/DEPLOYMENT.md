@@ -1,6 +1,6 @@
 ## Deployment Guide (Commercial Edition)
 
-This document describes how to deploy the Game Awards API stack (Netlify + Neon + Stripe). It assumes basic familiarity with Node.js and Git.
+This document describes how to deploy the Shakespeare Productions API stack (Netlify + Neon + Stripe). It assumes basic familiarity with Node.js and Git.
 
 ### 1. Architecture Overview
 Component | Purpose
@@ -69,23 +69,20 @@ netlify dev            # spins functions + static + proxy
 npm run dev            # Express only (no serverless simulation)
 ```
 
-### 8. Award Dataset
-Public repo includes `data/sample-awards.json` (subset). Place full licensed dataset at `internal/enhanced-honors-complete.json` (gitignored) to enable full results locally / production. Loader auto‑detects.
-
-### 9. Subscription Flow
+### 8. Subscription Flow
 1. Front-end calls `/.netlify/functions/create-subscription` with email, name, plan or priceId.
 2. Function creates (or reuses) Stripe customer + subscription (incomplete) → returns `client_secret` + provisional API key with plan limits.
 3. Stripe finalizes payment → webhook adjusts/suspends/resumes limits.
 
-### 10. Rate Limiting & Validation
+### 9. Rate Limiting & Validation
 - PL/pgSQL `validate_api_key_enhanced` enforces daily + monthly limits, suspension, resets.
 - Response headers include remaining daily & monthly usage.
 
-### 11. Logging & Observability
+### 10. Logging & Observability
 - Usage logged to `api_usage` (basic fields). Extend schema for latency / user agent detail as needed.
 - Health endpoint: `/.netlify/functions/health` includes build info (if generated) + DB check.
 
-### 12. Deploy Steps Recap
+### 11. Deploy Steps Recap
 ```bash
 # First time
 psql "$DATABASE_URL" -f neon/schema.sql

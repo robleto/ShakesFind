@@ -30,3 +30,20 @@
 - README, pricing, dashboard, api key pages updated accordingly
 - Removed speculative games roadmap (file deleted)
 - Clarified legacy award deprecation note
+
+## 3.0.0 (Awards Prune & Repo Cleanup)
+- Fully removed legacy award endpoints (`awards.js`, `categories.js`) and data loader (`lib/awards-data.js`)
+- Cleared sample awards dataset (`data/sample-awards.json` now empty placeholder)
+- Deleted obsolete root markdown docs (deployment variants, business summaries, quick start duplicates, stripe setup)
+- Consolidated deployment & operational guidance under `docs/technical/`
+- Updated health function branding text
+- Bumped version to 3.0.0 (`VERSION`, `package.json`)
+- Simplified README legacy note; removed award acknowledgments
+- Removed deprecated Express `/api/awards` route
+
+## 3.0.0 (Legacy Awards Prune)
+- Fully removed legacy award endpoints (`awards.js`, `categories.js`) and data loader (`lib/awards-data.js`)
+- Deleted / neutralized sample awards dataset
+- Updated architecture + README to reflect productions-only scope
+- Bumped major version due to permanent endpoint removals
+- Cleaned package scripts referencing award utilities
