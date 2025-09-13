@@ -1,8 +1,7 @@
 const db = require('../../config/database');
 
-// Load awards data (for now, still using JSON file)
-// In production, this would come from the database
-const awardsData = require('../../lib/awards-data');
+// Load productions data (temporary JSON source)
+const productionsData = require('../../lib/productions-data');
 
 exports.handler = async (event, context) => {
   // Enable CORS
@@ -31,12 +30,12 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           Response: "False",
-          Error: "No parameters provided. Please provide 'i' (award ID), 't' (title), 's' (search), or 'bgg_id'."
+          Error: "No parameters provided. Provide 'i' (production ID), 't' (play title) or 's' (search)."
         })
       };
     }
 
-    const { i: awardId, t: title, s: search, bgg_id, year, category, award_set, type, r: format = 'json', apikey } = query;
+  const { i: productionId, t: title, s: search, year, company, status, city, country, r: format = 'json', apikey } = query;
 
     // Check API key in production
     if (process.env.NETLIFY_DEV !== 'true' && !apikey) {
@@ -45,7 +44,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           Response: "False",
-          Error: "No API key provided. Get your free API key at https://gameawards.netlify.app/apikey"
+          Error: "No API key provided. Get your free API key at https://shakesfind.com/apikey"
         })
       };
     }
@@ -86,20 +85,39 @@ exports.handler = async (event, context) => {
     let result;
 
     if (search) {
-      result = searchAwards(search, { year, category, award_set, type });
-    } else if (awardId) {
-      result = getAwardById(awardId);
+      if (process.env.USE_DB === '1' && process.env.DATABASE_URL) {
+        const { getPool } = require('../../lib/db-pool');
+        const pool = getPool();
+        const params = [];
+        // Use plainto_tsquery for simple FTS; fallback to ILIKE patterns
+        params.push(search);
+        let where = 'WHERE search_vector @@ plainto_tsquery(\'english\', $1)';
+        if (year) { params.push(year); where += ` AND EXTRACT(YEAR FROM start_date) = $${params.length}`; }
+        if (company) { params.push('%'+company+'%'); where += ` AND company_name ILIKE $${params.length}`; }
+        if (status) { params.push(status); where += ` AND status = $${params.length}`; }
+        if (city) { params.push(city); where += ` AND LOWER(city)=LOWER($${params.length})`; }
+        if (country) { params.push(country); where += ` AND LOWER(country)=LOWER($${params.length})`; }
+        try {
+          const r = await pool.query(`SELECT id, play_title, company_name, venue_name, city, country, start_date, end_date, status, ticket_url, official_url, synopsis, ts_rank(search_vector, plainto_tsquery('english',$1)) AS rank FROM productions ${where} ORDER BY rank DESC, start_date DESC LIMIT 50`, params);
+          result = { Response: 'True', totalResults: r.rowCount, search, productions: r.rows };
+        } catch (e) {
+          console.error('DB FTS failed, fallback to memory', e);
+          result = searchProductions(search, { year, company, status, city, country });
+        }
+      } else {
+        result = searchProductions(search, { year, company, status, city, country });
+      }
+    } else if (productionId) {
+      result = getProductionById(productionId);
     } else if (title) {
-      result = getAwardByTitle(title, { year, category, award_set });
-    } else if (bgg_id) {
-      result = getAwardsByBggId(bgg_id);
+      result = getProductionsByTitle(title, { year, company });
     } else {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
           Response: "False",
-          Error: "Incorrect parameters. Please provide 'i' (award ID), 't' (title), 's' (search), or 'bgg_id'."
+          Error: "Incorrect parameters. Provide 'i' (production ID), 't' (play title) or 's' (search)."
         })
       };
     }
@@ -133,129 +151,36 @@ exports.handler = async (event, context) => {
 };
 
 // Helper functions (same as original server.js)
-function getAwardById(id) {
-  const award = awardsData.find(a => a.id === id);
-  if (!award) {
-    return {
-      Response: "False",
-      Error: "Award not found!"
-    };
-  }
-  return {
-    Response: "True",
-    ...award
-  };
+function getProductionById(id) {
+  const production = productionsData.find(p => p.id === id);
+  if (!production) return { Response: "False", Error: "Production not found!" };
+  return { Response: "True", ...production };
 }
 
-function getAwardByTitle(title, filters = {}) {
-  let results = awardsData.filter(award => 
-    award.title && award.title.toLowerCase().includes(title.toLowerCase())
-  );
-
-  // Apply filters
-  if (filters.year) {
-    results = results.filter(award => award.year == filters.year);
-  }
-  if (filters.category) {
-    results = results.filter(award => 
-      award.position && award.position.toLowerCase().includes(filters.category.toLowerCase())
-    );
-  }
-  if (filters.award_set) {
-    results = results.filter(award => 
-      award.awardSet && award.awardSet.toLowerCase().includes(filters.award_set.toLowerCase())
-    );
-  }
-
-  if (results.length === 0) {
-    return {
-      Response: "False",
-      Error: "Award not found!"
-    };
-  }
-
-  if (results.length === 1) {
-    return {
-      Response: "True",
-      ...results[0]
-    };
-  }
-
-  return {
-    Response: "True",
-    totalResults: results.length,
-    awards: results
-  };
+function getProductionsByTitle(title, filters = {}) {
+  let results = productionsData.filter(p => p.play_title && p.play_title.toLowerCase().includes(title.toLowerCase()));
+  if (filters.year) results = results.filter(p => p.start_year == filters.year);
+  if (filters.company) results = results.filter(p => p.company_name && p.company_name.toLowerCase().includes(filters.company.toLowerCase()));
+  if (results.length === 0) return { Response: "False", Error: "Production not found!" };
+  if (results.length === 1) return { Response: "True", ...results[0] };
+  return { Response: "True", totalResults: results.length, productions: results };
 }
 
-function getAwardsByBggId(bggId) {
-  const awards = awardsData.filter(award => 
-    award.boardgames && award.boardgames.some(game => game.bggId == bggId)
-  );
-
-  if (awards.length === 0) {
-    return {
-      Response: "False",
-      Error: "No awards found for this game!"
-    };
-  }
-
-  const gameName = awards[0].boardgames.find(game => game.bggId == bggId)?.name;
-
-  return {
-    Response: "True",
-    bggId: bggId,
-    gameName: gameName,
-    totalResults: awards.length,
-    awards: awards
-  };
-}
-
-function searchAwards(searchTerm, filters = {}) {
-  let results = awardsData.filter(award => {
-    const titleMatch = award.title && award.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const awardSetMatch = award.awardSet && award.awardSet.toLowerCase().includes(searchTerm.toLowerCase());
-    const positionMatch = award.position && award.position.toLowerCase().includes(searchTerm.toLowerCase());
-    const gameMatch = award.boardgames && award.boardgames.some(game => 
-      game.name && game.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    return titleMatch || awardSetMatch || positionMatch || gameMatch;
+function searchProductions(searchTerm, filters = {}) {
+  let results = productionsData.filter(p => {
+    const playMatch = p.play_title && p.play_title.toLowerCase().includes(searchTerm.toLowerCase());
+    const companyMatch = p.company_name && p.company_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const venueMatch = p.venue_name && p.venue_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const cityMatch = p.city && p.city.toLowerCase().includes(searchTerm.toLowerCase());
+    return playMatch || companyMatch || venueMatch || cityMatch;
   });
-
-  // Apply filters
-  if (filters.year) {
-    results = results.filter(award => award.year == filters.year);
-  }
-  if (filters.category) {
-    results = results.filter(award => 
-      award.position && award.position.toLowerCase().includes(filters.category.toLowerCase())
-    );
-  }
-  if (filters.award_set) {
-    results = results.filter(award => 
-      award.awardSet && award.awardSet.toLowerCase().includes(filters.award_set.toLowerCase())
-    );
-  }
-  if (filters.type) {
-    results = results.filter(award => 
-      award.title && award.title.toLowerCase().includes(filters.type.toLowerCase())
-    );
-  }
-
-  if (results.length === 0) {
-    return {
-      Response: "False",
-      Error: "No awards found!"
-    };
-  }
-
-  return {
-    Response: "True",
-    totalResults: results.length,
-    search: searchTerm,
-    awards: results.slice(0, 10)
-  };
+  if (filters.year) results = results.filter(p => p.start_year == filters.year);
+  if (filters.company) results = results.filter(p => p.company_name && p.company_name.toLowerCase().includes(filters.company.toLowerCase()));
+  if (filters.status) results = results.filter(p => p.status === filters.status);
+  if (filters.city) results = results.filter(p => p.city && p.city.toLowerCase() === filters.city.toLowerCase());
+  if (filters.country) results = results.filter(p => p.country && p.country.toLowerCase() === filters.country.toLowerCase());
+  if (results.length === 0) return { Response: "False", Error: "No productions found!" };
+  return { Response: "True", totalResults: results.length, search: searchTerm, productions: results.slice(0, 10) };
 }
 
 // Log API usage wrapper (uses Neon db helper)

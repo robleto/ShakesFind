@@ -1,7 +1,7 @@
-Commercial License (Game Awards API)
+Commercial License (Shakespeare Productions API)
 ===================================
 
-Copyright (c) 2025 Game Awards API ("Licensor"). All rights reserved.
+Copyright (c) 2025 Shakespeare Productions API ("Licensor"). All rights reserved.
 
 1. Grant of License
 You are granted a non‑exclusive, non‑transferable license to (a) deploy and run this codebase to provide API access to your own end users and/or internal applications; (b) modify the source internally for your deployment needs.
@@ -17,7 +17,7 @@ You may NOT:
 The included Stripe + Neon implementation is provided as a reference and may be adapted. You are responsible for compliance with Stripe terms and any regional data/privacy regulations.
 
 4. Attribution (Optional but Appreciated)
-Linking back or mentioning "Game Awards API" in derivative services or documentation is welcomed but not mandatory.
+Linking back or mentioning "Shakespeare Productions API" in derivative services or documentation is welcomed but not mandatory.
 
 5. Warranty Disclaimer
 THE SOFTWARE AND DATA ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. ALL USE IS AT YOUR OWN RISK.
@@ -35,7 +35,7 @@ License terminates automatically if you breach these terms. Upon termination you
 Determined by Licensor's principal place of business unless superseded by mandatory local law.
 
 10. Contact
-For extended/commercial redistribution rights contact: sales@gameawardsapi.com
+For extended/commercial redistribution rights contact: sales@shakesfind.com
 
 If you need an open license (e.g., MIT) for limited components, request a dual‑license arrangement.
 

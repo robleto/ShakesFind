@@ -1,7 +1,17 @@
-# Neon Database Migration Guide
+# Neon Database Migration Guide (v2 Shakespeare Refactor)
+
+## Important Version 2 Notice
+The project has been refactored from a "Game Awards" domain to the "Shakespeare Productions" domain (v2.0.0). All references to awards, categories, bgg_id, etc. now map to productions data: play titles, companies, venues, cities, countries, status, and start dates. Legacy endpoints `/api/awards` and `/api/categories` return HTTP 410 (Gone).
+
+If you are upgrading an existing deployment:
+1. Apply updated `neon/schema.sql` to add the `productions` table and full text search artifacts.
+2. Run `neon/seed.sql` to populate sample productions (optional).
+3. Remove code or clients depending on award-specific parameters (award_set, category, type, bgg_id).
+4. Update any automation hitting `/api/?s=...` queries to use production-related filters (company, city, status, year).
+5. Re-generate API keys only if you rotated secrets; key validation logic is unchanged.
 
 ## Overview
-This guide walks you through migrating the Game Awards API from Supabase to Neon, a modern serverless PostgreSQL platform.
+This guide walks you through migrating the Shakespeare Productions API from Supabase to Neon, a modern serverless PostgreSQL platform.
 
 ## Why Neon?
 
@@ -22,7 +32,7 @@ This guide walks you through migrating the Game Awards API from Supabase to Neon
 ### 1. Create Neon Account
 1. Go to [console.neon.tech](https://console.neon.tech)
 2. Sign up with GitHub (recommended for developers)
-3. Create a new project called "game-awards-api"
+3. Create a new project called "shakespeare-productions-api" (or any name you prefer)
 
 ### 2. Get Database Connection String
 1. In your Neon dashboard, go to your project
@@ -123,7 +133,9 @@ In your Netlify dashboard, update:
 After migration, verify these endpoints work:
 - `GET /api/health` - Database connectivity
 - `POST /api/generate-key` - API key generation
-- `GET /api/v1/awards` - Awards data with API key validation
+- `GET /api/?i=prod_1&apikey=demo` - Production by ID
+- `GET /api/?s=Hamlet&apikey=demo` - Search productions
+- `GET /api/productions?page=1&pageSize=5&apikey=demo` - Paginated productions list
 
 ## Troubleshooting
 

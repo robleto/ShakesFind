@@ -1,8 +1,10 @@
-# Game Awards API
+# Shakespeare Productions API
 
-A RESTful API for board game awards data (an OMDB-style service for tabletop). Public sample ships with a limited subset; a larger private dataset (non-redistributable) can be mounted under `internal/`.
+An OMDB-style REST API for upcoming and recent Shakespeare theatre productions worldwide: play titles, companies, venues, cities, countries, run dates, status, and optional metadata. Built for theatre apps, research, media, and operational tooling.
 
 > Commercial deployment asset. Not an open contribution project.
+
+Legacy Note: Earlier iterations referenced a "Game Awards" domain. Those award-specific endpoints and parameters are deprecated and no longer exposed; this repository is now focused solely on Shakespeare production data.
 ## 🚀 Deployment & Operations
 
 Production reference stack: Netlify (Functions + static) + Neon (Postgres) + Stripe (subscriptions). Detailed deployment, Neon, Stripe, and quick start guides now live under `docs/technical/`.
@@ -28,7 +30,7 @@ npm run dev  # nodemon auto-restart (Express)
 netlify dev
 ```
 
-The dataset includes major awards like Spiel des Jahres, Origins Awards, Diana Jones Award, and many more.
+Legacy (pre‑2.0) dataset context referenced board game award sets (Spiel des Jahres, Origins Awards, etc.). Those award-specific parameters/endpoints are deprecated and will not return data.
 
 ## ⚡ Quick Start (Local)
 
@@ -63,103 +65,90 @@ http://localhost:3000/api/
 
 | Parameter | Required | Description | Example |
 |-----------|----------|-------------|---------|
-| `i` | Optional* | Award ID | `10865` |
-| `t` | Optional* | Award title search | `Spiel des Jahres Winner` |
-| `s` | Optional* | Search across all fields | `Catan` |
-| `bgg_id` | Optional* | BoardGameGeek game ID | `13` |
-| `year` | No | Filter by year | `2023` |
-| `category` | No | Filter by category | `Game of the Year` |
-| `award_set` | No | Filter by award set | `Spiel des Jahres` |
-| `type` | No | Filter by type | `winner` or `nominee` |
-| `r` | No | Response format | `json` (xml coming soon) |
+## Active Domain
+Sample dataset includes Hamlet, Macbeth, Romeo and Juliet with company, venue, city, country, run dates, and status (upcoming | running | closed).
 
-*At least one of `i`, `t`, `s`, or `bgg_id` is required.
-
-### Example Requests
-
-#### Get award by ID
+#### Parameters (Active)
+| Parameter | Required | Description | Example |
+|-----------|----------|-------------|---------|
+| `i` | Optional* | Production ID | `prod_1` |
+| `t` | Optional* | Play title (substring) | `Hamlet` |
+| `s` | Optional* | Free search (play, company, venue, city) | `Stratford` |
+| `year` | No | Filter by start year | `2025` |
+| `company` | No | Filter by company substring | `Royal` |
+| `status` | No | Filter by status | `running` |
+| `city` | No | Exact city match (case-insensitive) | `London` |
+| `country` | No | Exact country match | `UK` |
 ```
 GET /api/?i=10865
-```
+*At least one of `i`, `t`, or `s` is required.
 
-#### Search for awards
+### Examples
+Get production by ID:
 ```
-GET /api/?s=Spiel des Jahres&year=2023
+GET /api/?i=prod_1
 ```
-
-#### Get all awards for a specific game
-```
+Search for productions:
+GET /api/?s=Hamlet&year=2025
 GET /api/?bgg_id=361
+Get productions by year:
 ```
-
-#### Get awards by year
+GET /api/years/2025
+List productions:
 ```
-GET /api/years/2023
+GET /api/productions
 ```
-
-#### List all award sets
-```
-GET /api/awards
-```
-
-#### List all categories
-```
-GET /api/categories
-```
-
-## 📊 Data Structure
-
-Each award object contains:
-
+Each production object contains:
 ```json
 {
   "Response": "True",
-  "id": "10865",
-  "slug": "1974-charles-s-roberts-best-amateur-game-winner",
-  "url": "/boardgamehonor/10865/1974-charles-s-roberts-best-amateur-game-winner",
-  "year": 1974,
-  "title": "Charles S Roberts Best Amateur Game Winner",
-  "primaryName": "",
-  "alternateNames": [],
-  "boardgames": [
-    {
-      "bggId": 18158,
-      "name": "Manassas"
-    }
-  ],
-  "awardSet": "1974 Charles S. Roberts",
-  "position": "Charles S. Roberts Best Amateur Game",
-  "isWinner": true,
-  "isNominee": false
+  "id": "prod_1",
+  "play_title": "Hamlet",
+  "company_name": "Royal Shakespeare Company",
+  "venue_name": "Swan Theatre",
+  "city": "Stratford-upon-Avon",
+  "country": "UK",
+  "start_date": "2025-10-01",
+  "end_date": "2025-11-30",
+  "status": "upcoming",
+  "ticket_url": "https://tickets.example/hamlet-rsc",
+  "official_url": "https://rsc.org/hamlet",
+  "synopsis": "A prince struggles with revenge and mortality.",
+  "start_year": 2025
 }
 ```
-
-## 🎮 Use Cases
-
-### For Publishers
-- Track award performance across your game catalog
-- Competitive analysis of award-winning games
-- Marketing material for award achievements
-
+  "_note": "Award-era fields removed",
+## 🎯 Use Cases
+### For Theatre Companies
+- Promote upcoming productions programmatically
+- Syndicate run schedules to partner sites
+- Monitor competitive programming in key cities
 ### For Developers
-- Integrate award data into gaming apps
-- Build recommendation engines based on award-winning games
-- Create award tracking features
-
+- Build city or venue production discovery apps
+- Automate newsletters of upcoming Shakespeare shows
+- Power ticket alert bots
 ### For Researchers
-- Academic studies on game design trends
-- Historical analysis of gaming industry recognition
-- Award system comparisons across regions
-
+- Analyze geographic distribution of Shakespeare productions
+- Study seasonality of programming
+- Cross-reference cultural funding & staging frequency
 ### For Media
-- Easy access for articles and reviews
-- Award season coverage automation
-- Historical context for feature pieces
+- Rapid fact-checking of current runs
+- Auto-generate production context sidebars
+- Trend pieces on staging popularity
+- **Neon PostgreSQL** – Users, API keys, usage, future production indexing
+- **In-memory dataset (current search)** – Pending SQL-backed search flag (`USE_DB=1`)
+<!-- Award-era research bullets removed -->
+Current search layer reads from `lib/productions-data.js`, which can load a private full dataset at `internal/enhanced-productions.json` (gitignored). The repo includes a minimal `data/sample-productions.json` for development & demonstrations.
+<!-- Removed legacy award comparison bullet -->
+1. Place the JSON file at `internal/enhanced-productions.json`
+### For Media
+- Inspired by the excellent OMDB API structure
+- Built for theatre data products
 
-## 🏗️ Architecture
+**🎭 Shakespeare Productions API** – Bringing live Shakespeare production data to developers worldwide.
 
 - **Netlify Functions + Express fallback** – Serverless first, local dev convenience
-- **Neon PostgreSQL** – Users, API keys, usage, (soon) award search
+- **Neon PostgreSQL** – Users, API keys, usage, (future) richer production indexing
 - **In-memory dataset (current search)** – Pending SQL-backed search flag (`USE_DB=1`)
 - **Rate limiting & usage tracking** – PL/pgSQL (`validate_api_key_enhanced`) sets remaining quota headers
 - **Build metadata** – `build-info.json` surfaced via `/health`
@@ -199,18 +188,11 @@ Not Permitted:
 - Reselling the raw dataset or bulk exports as a standalone product
 - Open‑sourcing the private full dataset
 
-Need broader rights (OEM / white‑label)? Email sales@gameawardsapi.com.
+Need broader rights (OEM / white‑label)? Email sales@shakesfind.com.
 
 ### Managing the Private Dataset
 
-Current search layer reads from `lib/awards-data.js`, which attempts to load a private full dataset at `internal/enhanced-honors-complete.json` (gitignored). The repo includes a minimal `data/sample-awards.json` for development & demonstrations.
-
-To use a full dataset privately:
-1. Place the JSON file at `internal/enhanced-honors-complete.json`
-2. Restart local dev (`npm run dev` or `netlify dev`)
-3. The loader will detect and use it automatically (log line: "Loaded full private dataset").
-
-Do NOT redistribute proprietary or third‑party dataset dumps. Keep the full dataset private under `internal/`.
+Award dataset loader (`lib/awards-data.js`) is retained only for historical reference and may be removed in a future cleanup. Do NOT add proprietary award dumps.
 
 ## 📝 License
 
@@ -224,10 +206,11 @@ See `LICENSE-COMMERCIAL.md`.
 
 ## 📞 Support
 
-- 📧 Email: support@gameawardsapi.com
+- 📧 Email: support@shakesfind.com
 - 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
 - 💬 Discord: [Board Game Developers](https://discord.gg/boardgamedev)
 
 ---
 
-**🎲 Game Awards API** – Bringing board game award data to developers worldwide.
+---
+This README reflects the canonical Shakespeare Productions focus after deprecating prior award endpoints.

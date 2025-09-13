@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Awards API - Board Game Awards Data</title>
-    <meta name="description" content="Professional API for board game awards data. Spiel des Jahres, Origins Awards, and more. Commercial licensing available.">
+    <title>Shakespeare Productions API - Global Shakespeare Runs</title>
+    <meta name="description" content="Professional API for Shakespeare productions data. Upcoming and running performances worldwide.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -105,7 +105,7 @@
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
                     </div>
-                    <span class="text-xl font-semibold text-gray-900">Game Awards API</span>
+                    <span class="text-xl font-semibold text-gray-900">Shakespeare Productions API</span>
                 </div>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#features" class="text-secondary hover:text-gray-900 transition-colors">Features</a>
@@ -122,10 +122,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-4xl mx-auto">
                 <h1 class="hero-title text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-                    The <span class="text-primary">Board Game Awards</span> API You've Been Looking For
+                    The <span class="text-primary">Shakespeare Productions</span> API You've Been Looking For
                 </h1>
                 <p class="hero-subtitle text-xl text-secondary mb-8 leading-relaxed">
-                    Access comprehensive board game awards data including Spiel des Jahres, Origins Awards, Diana Jones Award, and more. 
+                    Access structured data for upcoming and recent Shakespeare productions: play titles, companies, venues, cities, run dates, and status.
                     Clean, RESTful API with subscription-based access and commercial licensing.
                 </p>
                 <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
@@ -150,10 +150,10 @@
                     </div>
                     <span class="ml-4 text-gray-400 text-sm">Terminal</span>
                 </div>
-                <pre class="text-green-400 text-sm overflow-x-auto"><code class="terminal-text">curl "https://gameawards.netlify.app/api?s=wingspan&apikey=your_key"
+                <pre class="text-green-400 text-sm overflow-x-auto"><code class="terminal-text">curl "https://shakesfind.com/api?s=hamlet&apikey=your_key"
 
 {
-  "awards": [
+    "productions": [
     {
       "title": "Wingspan",
       "year": 2019,
@@ -175,10 +175,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="section-title text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                    Everything You Need for Game Awards Data
+                    Everything You Need for Shakespeare Production Data
                 </h2>
                 <p class="section-subtitle text-xl text-secondary max-w-2xl mx-auto">
-                    Comprehensive, clean, and reliable API access to the world's board game awards database.
+                    Clean, reliable API access to global Shakespeare production listings.
                 </p>
             </div>
             
@@ -220,7 +220,7 @@
                         </svg>
                     </div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-2">Comprehensive Data</h3>
-                    <p class="text-secondary">Spiel des Jahres, Origins, Diana Jones, Golden Geek, and 20+ more award databases.</p>
+                    <p class="text-secondary">Global coverage of Shakespeare productions: titles, companies, venues, cities, countries, dates, and status.</p>
                 </div>
                 
                 <div class="feature-card text-center p-6">
@@ -264,31 +264,31 @@
                     <div class="space-y-4">
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">i</code>
-                            <span class="ml-2 text-gray-700">Award ID (e.g. 10865)</span>
+                            <span class="ml-2 text-gray-700">Production ID (e.g. prod_1)</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">t</code>
-                            <span class="ml-2 text-gray-700">Award title to search for</span>
+                            <span class="ml-2 text-gray-700">Play title (partial match)</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">s</code>
-                            <span class="ml-2 text-gray-700">Search across all fields</span>
+                            <span class="ml-2 text-gray-700">Search play/company/venue/city</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">bgg_id</code>
-                            <span class="ml-2 text-gray-700">BoardGameGeek game ID</span>
+                            <span class="ml-2 text-gray-700">(Deprecated param removed)</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">year</code>
-                            <span class="ml-2 text-gray-700">Year of award</span>
+                            <span class="ml-2 text-gray-700">Start year</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">category</code>
-                            <span class="ml-2 text-gray-700">Award category/position</span>
+                            <span class="ml-2 text-gray-700">(Deprecated)</span>
                         </div>
                         <div class="param-card bg-white p-4 rounded-lg border border-gray-200">
                             <code class="text-primary font-mono">award_set</code>
-                            <span class="ml-2 text-gray-700">Award set name</span>
+                            <span class="ml-2 text-gray-700">(Deprecated)</span>
                         </div>
                     </div>
                     
@@ -306,30 +306,30 @@
                     <h3 class="text-2xl font-semibold text-gray-900 mb-6">Example Requests</h3>
                     
                     <div class="example-card bg-white p-6 rounded-lg border border-gray-200">
-                        <h4 class="font-semibold text-gray-900 mb-2">Get award by ID:</h4>
+                        <h4 class="font-semibold text-gray-900 mb-2">Get production by ID:</h4>
                         <div class="bg-gray-900 p-3 rounded text-green-400 font-mono text-sm overflow-x-auto">
-                            ?i=10865&apikey=yourkey
+                            ?i=prod_1&apikey=yourkey
                         </div>
                     </div>
                     
                     <div class="example-card bg-white p-6 rounded-lg border border-gray-200">
-                        <h4 class="font-semibold text-gray-900 mb-2">Search for "Spiel des Jahres":</h4>
+                        <h4 class="font-semibold text-gray-900 mb-2">Search for "Hamlet":</h4>
                         <div class="bg-gray-900 p-3 rounded text-green-400 font-mono text-sm overflow-x-auto">
-                            ?s=Spiel%20des%20Jahres&apikey=yourkey
+                            ?s=Hamlet&apikey=yourkey
                         </div>
                     </div>
                     
                     <div class="example-card bg-white p-6 rounded-lg border border-gray-200">
-                        <h4 class="font-semibold text-gray-900 mb-2">Get all awards for a game:</h4>
+                        <h4 class="font-semibold text-gray-900 mb-2">Filter by city (London):</h4>
                         <div class="bg-gray-900 p-3 rounded text-green-400 font-mono text-sm overflow-x-auto">
-                            ?bgg_id=361&apikey=yourkey
+                            ?s=London&city=London&apikey=yourkey
                         </div>
                     </div>
                     
                     <div class="example-card bg-white p-6 rounded-lg border border-gray-200">
-                        <h4 class="font-semibold text-gray-900 mb-2">Awards from 2020:</h4>
+                        <h4 class="font-semibold text-gray-900 mb-2">Productions starting in 2025:</h4>
                         <div class="bg-gray-900 p-3 rounded text-green-400 font-mono text-sm overflow-x-auto">
-                            ?s=winner&year=2020&apikey=yourkey
+                            ?s=Hamlet&year=2025&apikey=yourkey
                         </div>
                     </div>
                 </div>
@@ -494,7 +494,7 @@
                 Ready to Build Something Amazing?
             </h2>
             <p class="text-xl text-blue-100 mb-8">
-                Join thousands of developers, publishers, and gaming enthusiasts using the Game Awards API.
+                Join developers, theatres, and researchers using the Shakespeare Productions API.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/apikey" class="bg-white text-primary px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors">
@@ -518,10 +518,10 @@
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
                         </div>
-                        <span class="text-xl font-semibold text-white">Game Awards API</span>
+                        <span class="text-xl font-semibold text-white">Shakespeare Productions API</span>
                     </div>
                     <p class="text-gray-400 max-w-md">
-                        The comprehensive board game awards API for developers. 
+                        The comprehensive Shakespeare productions API for developers. 
                         Reliable, fast, and easy to integrate.
                     </p>
                 </div>
@@ -540,15 +540,15 @@
                     <h4 class="text-white font-semibold mb-4">Support</h4>
                     <ul class="space-y-2">
                         <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
-                        <li><a href="mailto:support@gameawardsapi.com" class="hover:text-white transition-colors">Contact Support</a></li>
+                        <li><a href="mailto:support@shakesfind.com" class="hover:text-white transition-colors">Contact Support</a></li>
                         <li><a href="/LICENSE-COMMERCIAL.md" class="hover:text-white transition-colors">Commercial License</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Game Awards API. All rights reserved. Built with ❤️ for the board gaming community.</p>
-                <p class="mt-2 text-sm">Not affiliated with BoardGameGeek, Spiel des Jahres, or other award organizations.</p>
+                <p>&copy; 2025 Shakespeare Productions API. All rights reserved. Built with ❤️ for the theatre community.</p>
+                <p class="mt-2 text-sm">Not affiliated with the Royal Shakespeare Company or any specific theatre organization.</p>
             </div>
         </div>
     </footer>
@@ -750,17 +750,22 @@
         
         // Typewriter effect for code terminal
         const codeLines = [
-            'curl "https://awards-api.com/api?s=wingspan&apikey=your_key"',
+            'curl "https://shakesfind.com/api?s=Hamlet&apikey=your_key"',
             '',
             '{',
-            '  "success": true,',
-            '  "data": [',
+            '  "Response": "True",',
+            '  "search": "Hamlet",',
+            '  "totalResults": 1,',
+            '  "productions": [',
             '    {',
-            '      "id": 12847,',
-            '      "game_title": "Wingspan",',
-            '      "year": 2019,',
-            '      "category": "Winner",',
-            '      "award_set": "Kennerspiel des Jahres"',
+            '      "id": "prod_1",',
+            '      "play_title": "Hamlet",',
+            '      "company_name": "Royal Shakespeare Company",',
+            '      "city": "Stratford-upon-Avon",',
+            '      "country": "UK",',
+            '      "start_date": "2025-10-01",',
+            '      "end_date": "2025-11-30",',
+            '      "status": "upcoming"',
             '    }',
             '  ]',
             '}'
@@ -838,7 +843,7 @@
         
         // Add some interactive demo functionality
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎲 Game Awards API - Ready to serve board game award data!');
+            console.log('� Shakespeare Productions API - Ready to serve production data!');
         });
     </script>
 </body>

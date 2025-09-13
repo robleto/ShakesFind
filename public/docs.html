@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation - Game Awards API</title>
+    <title>API Documentation - Shakespeare Productions API</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -116,8 +116,8 @@
 </head>
 <body>
     <header>
-        <h1>🎲 Game Awards API Documentation</h1>
-        <p>RESTful API for Board Game Award Data</p>
+    <h1>� Shakespeare Productions API Documentation</h1>
+    <p>RESTful API for Shakespeare Production Data</p>
     </header>
 
     <div class="container">
@@ -131,10 +131,10 @@
 
         <div class="section" id="overview">
             <h2>📋 Overview</h2>
-            <p>The Game Awards API provides access to comprehensive board game award data spanning decades. Backed by Neon serverless PostgreSQL for user accounts, API keys, and usage analytics; all award dataset lookups are in-memory for speed.</p>
+            <p>The Shakespeare Productions API provides access to structured data about upcoming and recent Shakespeare theatre productions worldwide. Backed by Neon PostgreSQL for accounts, API keys, usage; production lookups currently in-memory with optional DB search.</p>
             
             <h3>Base URL</h3>
-            <div class="endpoint">https://gameawardsapi.com/api/</div>
+            <div class="endpoint">https://shakesfind.com/api/</div>
             
             <h3>Data Format</h3>
             <p>All responses are in JSON format by default. XML support coming soon.</p>
@@ -175,70 +175,66 @@
                 <tr>
                     <td><span class="code">i</span></td>
                     <td>Optional*</td>
-                    <td>Award ID</td>
-                    <td>10865</td>
+                    <td>Production ID</td>
+                    <td>prod_1</td>
                 </tr>
                 <tr>
                     <td><span class="code">t</span></td>
                     <td>Optional*</td>
-                    <td>Award title search</td>
-                    <td>Spiel des Jahres Winner</td>
+                    <td>Play title search</td>
+                    <td>Hamlet</td>
                 </tr>
                 <tr>
                     <td><span class="code">s</span></td>
                     <td>Optional*</td>
-                    <td>Search across all fields</td>
-                    <td>Catan</td>
+                    <td>Search across play/company/venue/city</td>
+                    <td>Stratford</td>
                 </tr>
-                <tr>
-                    <td><span class="code">bgg_id</span></td>
-                    <td>Optional*</td>
-                    <td>BoardGameGeek game ID</td>
-                    <td>13</td>
-                </tr>
+                
                 <tr>
                     <td><span class="code">year</span></td>
                     <td>No</td>
-                    <td>Filter by year</td>
-                    <td>2023</td>
+                    <td>Filter by start year</td>
+                    <td>2025</td>
                 </tr>
                 <tr>
-                    <td><span class="code">category</span></td>
+                    <td><span class="code">company</span></td>
                     <td>No</td>
-                    <td>Filter by category</td>
-                    <td>Game of the Year</td>
+                    <td>Filter by company substring</td>
+                    <td>Royal</td>
                 </tr>
                 <tr>
-                    <td><span class="code">award_set</span></td>
+                    <td><span class="code">status</span></td>
                     <td>No</td>
-                    <td>Filter by award set</td>
-                    <td>Spiel des Jahres</td>
+                    <td>Filter by status</td>
+                    <td>running</td>
                 </tr>
                 <tr>
-                    <td><span class="code">type</span></td>
+                    <td><span class="code">city</span></td>
                     <td>No</td>
-                    <td>Filter by type</td>
-                    <td>winner, nominee</td>
+                    <td>Filter by city</td>
+                    <td>London</td>
+                </tr>
+                <tr>
+                    <td><span class="code">country</span></td>
+                    <td>No</td>
+                    <td>Filter by country</td>
+                    <td>UK</td>
                 </tr>
             </table>
-            <p><em>*At least one of i, t, s, or bgg_id is required.</em></p>
+            <p><em>*At least one of i, t, or s is required.</em></p>
 
             <h3>Additional Endpoints</h3>
             
             <div class="endpoint">
-                <span class="method">GET</span> /api/awards
+                <span class="method">GET</span> /api/productions
             </div>
-            <p>Get list of all available award sets.</p>
-            
-            <div class="endpoint">
-                <span class="method">GET</span> /api/categories
-            </div>
-            <p>Get list of all available award categories.</p>
+            <p>List productions (paginated).</p>
             
             <div class="endpoint">
                 <span class="method">GET</span> /api/years/{year}
             </div>
-            <p>Get all awards for a specific year.</p>
+            <p>Get all productions with start year.</p>
             
             <div class="endpoint">
                 <span class="method">GET</span> /health
@@ -249,29 +245,29 @@
         <div class="section" id="examples">
             <h2>💡 Examples</h2>
             
-            <h3>Get award by ID</h3>
-            <div class="example" onclick="testAPI('/api/?i=10865')">
-                GET /api/?i=10865&apikey=demo
+            <h3>Get production by ID</h3>
+            <div class="example" onclick="testAPI('/api/?i=prod_1')">
+                GET /api/?i=prod_1&apikey=demo
             </div>
             
-            <h3>Search for Spiel des Jahres 2023</h3>
-            <div class="example" onclick="testAPI('/api/?s=Spiel des Jahres&year=2023')">
-                GET /api/?s=Spiel des Jahres&year=2023&apikey=demo
+            <h3>Search for Hamlet 2025</h3>
+            <div class="example" onclick="testAPI('/api/?s=Hamlet&year=2025')">
+                GET /api/?s=Hamlet&year=2025&apikey=demo
             </div>
             
-            <h3>Get all awards for Catan</h3>
-            <div class="example" onclick="testAPI('/api/?bgg_id=13')">
-                GET /api/?bgg_id=13&apikey=demo
+            <h3>Filter by company (Royal)</h3>
+            <div class="example" onclick="testAPI('/api/?s=Royal&company=Royal')">
+                GET /api/?s=Royal&company=Royal&apikey=demo
             </div>
             
-            <h3>Search for Origins Awards</h3>
-            <div class="example" onclick="testAPI('/api/?s=Origins')">
-                GET /api/?s=Origins&apikey=demo
+            <h3>Search by city (London)</h3>
+            <div class="example" onclick="testAPI('/api/?s=London&city=London')">
+                GET /api/?s=London&city=London&apikey=demo
             </div>
             
-            <h3>Get all award sets</h3>
-            <div class="example" onclick="testAPI('/api/awards')">
-                GET /api/awards
+            <h3>List productions (page 1)</h3>
+            <div class="example" onclick="testAPI('/api/productions?page=1&pageSize=2')">
+                GET /api/productions?page=1&pageSize=2
             </div>
 
             <div id="response" class="response" style="display: none;">
@@ -308,7 +304,7 @@
                 <tr>
                     <td>404</td>
                     <td>Not Found</td>
-                    <td>Award not found</td>
+                    <td>Production not found</td>
                 </tr>
                 <tr>
                     <td>429</td>

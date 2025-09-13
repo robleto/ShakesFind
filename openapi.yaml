@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Shakespeare Productions API
+  version: 2.1.1
+  description: REST API for querying upcoming and recent Shakespeare theatre productions worldwide.
+servers:
+  - url: https://shakesfind.com
+paths:
+  /api/:
+    get:
+      summary: Get production(s) via search or direct lookup
+      parameters:
+        - in: query
+          name: i
+          schema: { type: string }
+          description: Production ID
+        - in: query
+          name: t
+          schema: { type: string }
+          description: Play title substring
+        - in: query
+          name: s
+          schema: { type: string }
+          description: Free text search (play/company/venue/city)
+        - in: query
+          name: year
+          schema: { type: integer }
+        - in: query
+          name: company
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [upcoming, running, closed] }
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: country
+          schema: { type: string }
+        - in: query
+          name: r
+          schema: { type: string, enum: [json] }
+      responses:
+        '200':
+          description: Production or search results
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Production'
+                  - $ref: '#/components/schemas/SearchResponse'
+  /api/productions:
+    get:
+      summary: List productions (paginated)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, default: 25, maximum: 100 }
+        - in: query
+          name: orderBy
+          schema: { type: string, enum: [start_date, end_date, play_title, city, status], default: start_date }
+        - in: query
+          name: orderDir
+          schema: { type: string, enum: [asc, desc], default: asc }
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductions'
+  /api/years/{year}:
+    get:
+      summary: List productions starting in a specific year
+      parameters:
+        - in: path
+          name: year
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Year filtered results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+components:
+  schemas:
+    Production:
+      type: object
+      properties:
+        id: { type: string }
+        play_title: { type: string }
+        company_name: { type: string }
+        venue_name: { type: string }
+        city: { type: string }
+        country: { type: string }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        status: { type: string }
+        ticket_url: { type: string }
+        official_url: { type: string }
+        synopsis: { type: string }
+        start_year: { type: integer }
+    SearchResponse:
+      type: object
+      properties:
+        Response: { type: string }
+        totalResults: { type: integer }
+        search: { type: string }
+        productions:
+          type: array
+          items: { $ref: '#/components/schemas/Production' }
+    PaginatedProductions:
+      type: object
+      properties:
+        Response: { type: string }
+        totalResults: { type: integer }
+        page: { type: integer }
+        pageSize: { type: integer }
+        orderBy: { type: string }
+        orderDir: { type: string }
+        productions:
+          type: array
+          items: { $ref: '#/components/schemas/Production' }

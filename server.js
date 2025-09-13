@@ -8,8 +8,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Load awards data
-const awardsData = require('./lib/awards-data');
+// Load productions data
+const productionsData = require('./lib/productions-data');
+let dbClient = null;
+if (process.env.USE_DB === '1') {
+  try {
+    dbClient = require('@neondatabase/serverless');
+  } catch (e) {
+    console.warn('DB search enabled but Neon client not available');
+  }
+}
 
 // Middleware
 app.use(helmet());
@@ -48,16 +56,16 @@ app.get('/apikey', (req, res) => {
   res.sendFile(__dirname + '/public/apikey.html');
 });
 
-// Main API endpoint - Get award by ID
+// Main API endpoint - Get production by ID / search
 app.get('/api/', (req, res) => {
-  const { i: awardId, t: title, s: search, bgg_id, year, category, award_set, type, r: format = 'json' } = req.query;
+  const { i: productionId, t: title, s: search, year, company, status, city, country, r: format = 'json' } = req.query;
   
   // Require API key for production
   const apiKey = req.query.apikey;
   if (process.env.NODE_ENV === 'production' && !apiKey) {
     return res.status(401).json({
       Response: "False",
-      Error: "No API key provided. Request API key at https://gameawardsapi.com/apikey"
+  Error: "No API key provided. Request API key at https://shakesfind.com/apikey"
     });
   }
 
@@ -65,21 +73,46 @@ app.get('/api/', (req, res) => {
     let result;
 
     if (search) {
-      // Search functionality
-      result = searchAwards(search, { year, category, award_set, type });
-    } else if (awardId) {
-      // Get specific award by ID
-      result = getAwardById(awardId);
+      if (process.env.USE_DB === '1' && dbClient) {
+        result = { Response: 'True', ...(res.locals || {}), ...( { productions: [], totalResults: 0 } ) };
+        // Simple SQL search (placeholder) - implement real query later
+        // Keeping identical shape to in-memory result if empty
+        // TODO: Implement actual SQL FTS using to_tsvector index
+  const { getPool } = require('./lib/db-pool');
+  const pool = getPool();
+        // Basic ILIKE fallback for now
+        const params = [];
+        params.push(search);
+        let where = "WHERE search_vector @@ plainto_tsquery('english', $1)";
+        if (year) { params.push(year); where += ` AND EXTRACT(YEAR FROM start_date) = $${params.length}`; }
+        if (company) { params.push('%'+company+'%'); where += ` AND company_name ILIKE $${params.length}`; }
+        if (status) { params.push(status); where += ` AND status = $${params.length}`; }
+        if (city) { params.push(city); where += ` AND LOWER(city)=LOWER($${params.length})`; }
+        if (country) { params.push(country); where += ` AND LOWER(country)=LOWER($${params.length})`; }
+        try {
+          pool.query(`SELECT id, play_title, company_name, venue_name, city, country, start_date, end_date, status, ticket_url, official_url, synopsis, ts_rank(search_vector, plainto_tsquery('english',$1)) AS rank FROM productions ${where} ORDER BY rank DESC, start_date DESC LIMIT 50`, params)
+            .then(r => {
+              result = { Response: 'True', totalResults: r.rowCount, search, productions: r.rows };
+              res.json(result);
+            })
+            .catch(err => {
+              console.error('SQL search error', err);
+              res.json(searchProductions(search, { year, company, status, city, country }));
+            });
+          return; // prevent double send
+        } catch (e) {
+          console.error('DB search failed, falling back', e);
+        }
+      }
+      result = searchProductions(search, { year, company, status, city, country });
+    } else if (productionId) {
+      result = getProductionById(productionId);
     } else if (title) {
-      // Get award by title
-      result = getAwardByTitle(title, { year, category, award_set });
-    } else if (bgg_id) {
-      // Get all awards for a specific BGG game ID
-      result = getAwardsByBggId(bgg_id);
+      result = getProductionsByTitle(title, { year, company });
     } else {
       return res.status(400).json({
         Response: "False",
-        Error: "Incorrect parameters. Please provide 'i' (award ID), 't' (title), 's' (search), or 'bgg_id'."
+        Error: "Incorrect parameters. Provide 'i' (production ID), 't' (play title) or 's' (search)."
       });
     }
 
@@ -101,166 +134,102 @@ app.get('/api/', (req, res) => {
   }
 });
 
-// Get all available award sets
-app.get('/api/awards', (req, res) => {
-  const awardSets = [...new Set(awardsData.map(award => award.awardSet))].sort();
-  res.json({
-    Response: "True",
-    totalResults: awardSets.length,
-    awardSets: awardSets
-  });
-});
-
-// Get all available categories/positions
-app.get('/api/categories', (req, res) => {
-  const categories = [...new Set(awardsData.map(award => award.position))].sort();
-  res.json({
-    Response: "True",
-    totalResults: categories.length,
-    categories: categories
-  });
-});
-
-// Get awards by year
+// Get productions by start year
 app.get('/api/years/:year', (req, res) => {
   const { year } = req.params;
-  const yearAwards = awardsData.filter(award => award.year == year);
-  
+  const yearProductions = productionsData.filter(p => p.start_year == year);
   res.json({
-    Response: yearAwards.length > 0 ? "True" : "False",
-    totalResults: yearAwards.length,
+    Response: yearProductions.length > 0 ? "True" : "False",
+    totalResults: yearProductions.length,
     year: year,
-    awards: yearAwards
+    productions: yearProductions
+  });
+});
+
+// List productions (basic pagination later)
+app.get('/api/productions', (req, res) => {
+  const {
+    page = 1,
+    pageSize = 25,
+    orderBy = 'start_date',
+    orderDir = 'asc'
+  } = req.query;
+
+  const validOrderBy = new Set(['start_date','end_date','play_title','city','status']);
+  const sortKey = validOrderBy.has(orderBy) ? orderBy : 'start_date';
+  const dir = orderDir === 'desc' ? -1 : 1;
+
+  const sorted = [...productionsData].sort((a,b) => {
+    const av = a[sortKey] || '';
+    const bv = b[sortKey] || '';
+    if (av < bv) return -1 * dir;
+    if (av > bv) return 1 * dir;
+    return 0;
+  });
+
+  const p = Math.max(1, parseInt(page));
+  const ps = Math.min(100, Math.max(1, parseInt(pageSize)));
+  const start = (p - 1) * ps;
+  const slice = sorted.slice(start, start + ps);
+
+  res.json({
+    Response: 'True',
+    totalResults: productionsData.length,
+    page: p,
+    pageSize: ps,
+    orderBy: sortKey,
+    orderDir: dir === 1 ? 'asc' : 'desc',
+    productions: slice
+  });
+});
+
+// Deprecated legacy endpoint
+app.get('/api/awards', (req, res) => {
+  res.status(410).json({
+    Response: 'False',
+    Error: 'Endpoint deprecated. Use /api/productions instead.'
   });
 });
 
 // Helper functions
-function getAwardById(id) {
-  const award = awardsData.find(a => a.id === id);
-  if (!award) {
-    return {
-      Response: "False",
-      Error: "Award not found!"
-    };
+function getProductionById(id) {
+  const production = productionsData.find(p => p.id === id);
+  if (!production) {
+    return { Response: "False", Error: "Production not found!" };
   }
-  return {
-    Response: "True",
-    ...award
-  };
+  return { Response: "True", ...production };
 }
 
-function getAwardByTitle(title, filters = {}) {
-  let results = awardsData.filter(award => 
-    award.title.toLowerCase().includes(title.toLowerCase())
+function getProductionsByTitle(title, filters = {}) {
+  let results = productionsData.filter(p => 
+    p.play_title && p.play_title.toLowerCase().includes(title.toLowerCase())
   );
-
-  // Apply filters
   if (filters.year) {
-    results = results.filter(award => award.year == filters.year);
+    results = results.filter(p => p.start_year == filters.year);
   }
-  if (filters.category) {
-    results = results.filter(award => 
-      award.position.toLowerCase().includes(filters.category.toLowerCase())
-    );
+  if (filters.company) {
+    results = results.filter(p => p.company_name && p.company_name.toLowerCase().includes(filters.company.toLowerCase()));
   }
-  if (filters.award_set) {
-    results = results.filter(award => 
-      award.awardSet.toLowerCase().includes(filters.award_set.toLowerCase())
-    );
-  }
-
-  if (results.length === 0) {
-    return {
-      Response: "False",
-      Error: "Award not found!"
-    };
-  }
-
-  // Return first match for single result, or all matches
-  if (results.length === 1) {
-    return {
-      Response: "True",
-      ...results[0]
-    };
-  }
-
-  return {
-    Response: "True",
-    totalResults: results.length,
-    awards: results
-  };
+  if (results.length === 0) return { Response: "False", Error: "Production not found!" };
+  if (results.length === 1) return { Response: "True", ...results[0] };
+  return { Response: "True", totalResults: results.length, productions: results };
 }
 
-function getAwardsByBggId(bggId) {
-  const awards = awardsData.filter(award => 
-    award.boardgames.some(game => game.bggId == bggId)
-  );
-
-  if (awards.length === 0) {
-    return {
-      Response: "False",
-      Error: "No awards found for this game!"
-    };
-  }
-
-  // Get game name from first result
-  const gameName = awards[0].boardgames.find(game => game.bggId == bggId)?.name;
-
-  return {
-    Response: "True",
-    bggId: bggId,
-    gameName: gameName,
-    totalResults: awards.length,
-    awards: awards
-  };
-}
-
-function searchAwards(searchTerm, filters = {}) {
-  let results = awardsData.filter(award => {
-    const titleMatch = award.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const awardSetMatch = award.awardSet.toLowerCase().includes(searchTerm.toLowerCase());
-    const positionMatch = award.position.toLowerCase().includes(searchTerm.toLowerCase());
-    const gameMatch = award.boardgames.some(game => 
-      game.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    return titleMatch || awardSetMatch || positionMatch || gameMatch;
+function searchProductions(searchTerm, filters = {}) {
+  let results = productionsData.filter(p => {
+    const playMatch = p.play_title && p.play_title.toLowerCase().includes(searchTerm.toLowerCase());
+    const companyMatch = p.company_name && p.company_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const venueMatch = p.venue_name && p.venue_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const cityMatch = p.city && p.city.toLowerCase().includes(searchTerm.toLowerCase());
+    return playMatch || companyMatch || venueMatch || cityMatch;
   });
-
-  // Apply filters
-  if (filters.year) {
-    results = results.filter(award => award.year == filters.year);
-  }
-  if (filters.category) {
-    results = results.filter(award => 
-      award.position.toLowerCase().includes(filters.category.toLowerCase())
-    );
-  }
-  if (filters.award_set) {
-    results = results.filter(award => 
-      award.awardSet.toLowerCase().includes(filters.award_set.toLowerCase())
-    );
-  }
-  if (filters.type) {
-    // Type could be 'winner', 'nominee', etc.
-    results = results.filter(award => 
-      award.title.toLowerCase().includes(filters.type.toLowerCase())
-    );
-  }
-
-  if (results.length === 0) {
-    return {
-      Response: "False",
-      Error: "No awards found!"
-    };
-  }
-
-  return {
-    Response: "True",
-    totalResults: results.length,
-    search: searchTerm,
-    awards: results.slice(0, 10) // Limit to first 10 results like OMDB
-  };
+  if (filters.year) results = results.filter(p => p.start_year == filters.year);
+  if (filters.company) results = results.filter(p => p.company_name && p.company_name.toLowerCase().includes(filters.company.toLowerCase()));
+  if (filters.status) results = results.filter(p => p.status === filters.status);
+  if (filters.city) results = results.filter(p => p.city && p.city.toLowerCase() === filters.city.toLowerCase());
+  if (filters.country) results = results.filter(p => p.country && p.country.toLowerCase() === filters.country.toLowerCase());
+  if (results.length === 0) return { Response: "False", Error: "No productions found!" };
+  return { Response: "True", totalResults: results.length, search: searchTerm, productions: results.slice(0, 10) };
 }
 
 // Health check endpoint
@@ -285,10 +254,30 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🎲 Game Awards API server running on port ${PORT}`);
-  console.log(`📊 Loaded ${awardsData.length} awards`);
-  console.log(`🌐 API endpoint: http://localhost:${PORT}/api/`);
-});
+if (process.env.JEST_WORKER_ID === undefined) {
+  const startServer = (portToUse) => {
+    const server = app.listen(portToUse, () => {
+      console.log(`🎭 Shakespeare Productions API server running on port ${portToUse}`);
+      console.log(`📊 Loaded ${productionsData.length} productions`);
+      console.log(`🌐 API endpoint: http://localhost:${portToUse}/api/`);
+    });
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        if (process.env.NODE_ENV === 'production') {
+          console.error(`Port ${portToUse} in use. Set PORT env var to a free port.`);
+          process.exit(1);
+        } else {
+          const nextPort = Number(portToUse) + 1;
+            console.warn(`Port ${portToUse} in use. Trying ${nextPort}...`);
+            startServer(nextPort);
+        }
+      } else {
+        console.error('Server listen error:', err);
+        process.exit(1);
+      }
+    });
+  };
+  startServer(PORT);
+}
 
 module.exports = app;

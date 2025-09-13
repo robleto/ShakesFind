@@ -1,7 +1,7 @@
 {
-  "name": "game-awards-api",
-  "version": "1.0.0",
-  "description": "A RESTful API for board game awards data - similar to OMDB API but for board games",
+  "name": "shakesfind-api",
+  "version": "2.1.1",
+  "description": "A RESTful API for Shakespeare productions (upcoming & recent runs) - OMDB style",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -22,12 +22,12 @@
     "test:webhooks": "node dev-scripts/test-stripe-webhooks.js"
   },
   "keywords": [
-    "board-games",
-    "awards",
+    "shakespeare",
+    "theatre",
+    "productions",
     "api",
     "rest",
-    "boardgamegeek",
-    "gaming"
+    "culture"
   ],
   "author": "Greg Robleto",
   "license": "Commercial",
@@ -47,7 +47,8 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "netlify-cli": "^17.10.1",
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.4"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -3,13 +3,14 @@
  Will expand with DB + Stripe integration coverage.
 */
 
-const { handler } = require('../../netlify/functions/api');
+const path = require('path');
+const { handler } = require(path.join(process.cwd(), 'netlify/functions/api.js'));
 
 describe('API basic smoke tests', () => {
-  test('search wingspan (demo key)', async () => {
+  test('search hamlet (demo key)', async () => {
     const event = {
       httpMethod: 'GET',
-      queryStringParameters: { s: 'wingspan', apikey: 'demo' },
+      queryStringParameters: { s: 'hamlet', apikey: 'demo' },
       path: '/api'
     };
     const res = await handler(event);

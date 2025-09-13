@@ -1,0 +1,44 @@
+[
+  {
+    "id": "prod_1",
+    "play_title": "Hamlet",
+    "company_name": "Royal Shakespeare Company",
+    "venue_name": "Swan Theatre",
+    "city": "Stratford-upon-Avon",
+    "country": "UK",
+    "start_date": "2025-10-01",
+    "end_date": "2025-11-30",
+    "status": "upcoming",
+    "ticket_url": "https://tickets.example/hamlet-rsc",
+    "official_url": "https://rsc.org/hamlet",
+    "synopsis": "A prince struggles with revenge and mortality."
+  },
+  {
+    "id": "prod_2",
+    "play_title": "Macbeth",
+    "company_name": "Globe Theatre",
+    "venue_name": "Shakespeare's Globe",
+    "city": "London",
+    "country": "UK",
+    "start_date": "2025-08-25",
+    "end_date": "2025-09-25",
+    "status": "running",
+    "ticket_url": "https://tickets.example/macbeth-globe",
+    "official_url": "https://shakespearesglobe.com/macbeth",
+    "synopsis": "A Scottish general's ambition leads to tragedy."
+  },
+  {
+    "id": "prod_3",
+    "play_title": "Romeo and Juliet",
+    "company_name": "Broadway Classics",
+    "venue_name": "Lyric Theatre",
+    "city": "New York",
+    "country": "USA",
+    "start_date": "2025-04-01",
+    "end_date": "2025-06-01",
+    "status": "closed",
+    "ticket_url": "https://tickets.example/romeo-juliet-bc",
+    "official_url": "https://broadwayclassics.org/romeo-juliet",
+    "synopsis": "Star-crossed lovers defy their feuding families."
+  }
+]

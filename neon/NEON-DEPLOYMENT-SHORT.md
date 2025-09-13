@@ -1,4 +1,4 @@
-# Neon Quick Deployment (TL;DR)
+# Neon Quick Deployment (TL;DR) – v2 Shakespeare Productions
 
 1. Create Neon project → copy connection string
 2. Run `neon/schema.sql` in SQL Editor
@@ -19,8 +19,9 @@ RATE_LIMIT_MAX_REQUESTS=1000
 6. Test endpoints:
 ```
 /health
-/api/?i=10865&apikey=demo
-/api/?s=Spiel%20des%20Jahres&year=2023&apikey=demo
+/api/?i=prod_1&apikey=demo
+/api/?s=Hamlet&year=2025&apikey=demo
+/api/productions?page=1&pageSize=5&apikey=demo
 ```
 7. Generate real key via `/apikey` form.
 
@@ -35,4 +36,4 @@ SELECT validate_api_key('paste_generated_key');
 - Confirm no `@supabase/supabase-js` dependency (already removed)
 - Use `NEON-MIGRATION.md` for detailed steps
 
-Done. Your Neon-backed Game Awards API is production ready.
+Done. Your Neon-backed Shakespeare Productions API is production ready.

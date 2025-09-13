@@ -1,5 +1,5 @@
--- Game Awards API Database Schema for Neon
--- This schema creates tables for user management, API keys, and usage tracking
+-- Shakespeare Productions API Database Schema for Neon
+-- (Refactored from former Game Awards API)
 
 -- Users table for API key management
 CREATE TABLE IF NOT EXISTS users (
@@ -50,6 +50,58 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_usage_api_key ON api_usage(api_key);
 CREATE INDEX IF NOT EXISTS idx_api_usage_timestamp ON api_usage(timestamp);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+-- Productions domain (new)
+CREATE TABLE IF NOT EXISTS productions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  play_title TEXT NOT NULL,
+  company_name TEXT,
+  venue_name TEXT,
+  city TEXT,
+  country TEXT,
+  start_date DATE,
+  end_date DATE,
+  status TEXT DEFAULT 'upcoming' CHECK (status IN ('upcoming','running','closed')),
+  ticket_url TEXT,
+  official_url TEXT,
+  synopsis TEXT,
+  notes TEXT,
+  search_vector tsvector,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_productions_play_title ON productions USING GIN (to_tsvector('english', play_title));
+CREATE INDEX IF NOT EXISTS idx_productions_city ON productions(city);
+CREATE INDEX IF NOT EXISTS idx_productions_status ON productions(status);
+CREATE INDEX IF NOT EXISTS idx_productions_search_vector ON productions USING GIN (search_vector);
+
+-- Trigger to keep search_vector updated
+CREATE OR REPLACE FUNCTION productions_search_vector_update() RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector := to_tsvector('english', coalesce(NEW.play_title,'') || ' ' || coalesce(NEW.company_name,'') || ' ' || coalesce(NEW.venue_name,'') || ' ' || coalesce(NEW.city,'') || ' ' || coalesce(NEW.country,''));
+  RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_productions_search_vector ON productions;
+CREATE TRIGGER trg_productions_search_vector
+BEFORE INSERT OR UPDATE ON productions
+FOR EACH ROW EXECUTE FUNCTION productions_search_vector_update();
+
+-- Basic trigger to update updated_at
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_productions_updated_at ON productions;
+CREATE TRIGGER trg_productions_updated_at
+BEFORE UPDATE ON productions
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
 
 -- Function to generate API key
 CREATE OR REPLACE FUNCTION generate_api_key(
